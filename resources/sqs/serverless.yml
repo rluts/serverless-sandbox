@@ -1,0 +1,39 @@
+service: serverless-sqs-queue
+frameworkVersion: "2"
+variablesResolutionMode: 20210326
+
+provider:
+  name: aws
+  stage: dev
+  region: eu-central-1
+
+resources:
+  Resources:
+    S3Queue:
+      Type: "AWS::SQS::Queue"
+      Properties:
+        QueueName: "S3Queue"
+        RedrivePolicy:
+          deadLetterTargetArn:
+            Fn::GetAtt:
+              - "S3DeadLetterQueue"
+              - "Arn"
+          maxReceiveCount: 5
+    S3DeadLetterQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: "S3DeadLetterQueue"
+
+  Outputs:
+    S3Queue:
+      Value:
+        "Ref": S3Queue
+      Export:
+        Name: S3Queue
+    S3QueueArn:
+      Value:
+        Fn::GetAtt:
+          - "S3Queue"
+          - "Arn"
+      Export:
+        Name: 'S3QueueArn'

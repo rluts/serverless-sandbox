@@ -1,0 +1,131 @@
+service: serverless-api-dynamodb
+frameworkVersion: '2'
+
+package:
+  individually: true
+  exclude:
+    - "*/**"
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  apiName: serverless_training_p1
+  region: eu-central-1
+  lambdaHashingVersion: 20201221
+  environment: ${file(../../serverless.common.yml):environment}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+            - dynamodb:DeleteItem
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+  tracing:
+      lambda: true
+
+functions:
+  getUsers:
+    handler: get_users/lambda_handler.get_users
+    package:
+      include:
+        - get_users/**
+    memorySize: 128
+    events:
+      - http:
+          path: /user
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+
+  getUser:
+    handler: get_user/lambda_handler.get_user
+    package:
+      include:
+        - get_user/**
+    memorySize: 128
+    events:
+      - http:
+          path: /user/{id}
+          method: get
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+
+  createUser:
+    handler: create_user/lambda_handler.create_user
+    package:
+      include:
+        - create_user/**
+    memorySize: 128
+    events:
+      - http:
+          path: /user
+          method: post
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+
+  updateUser:
+    handler: update_user/lambda_handler.update_user
+    package:
+      include:
+        - update_user/**
+    memorySize: 128
+    events:
+      - http:
+          path: /user/{id}
+          method: put
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+
+  deleteUser:
+    handler: delete_user/lambda_handler.delete_user
+    package:
+      include:
+        - delete_user/**
+    memorySize: 128
+    events:
+      - http:
+          path: /user/{id}
+          method: delete
+          cors:
+            origin: '*'
+            headers:
+              - Content-Type
+
+resources:
+  Resources:
+    GatewayResponseDefault4XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+
+    GatewayResponseDefault5XX:
+      Type: AWS::ApiGateway::GatewayResponse
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type'"
+          gatewayresponse.header.Access-Control-Allow-Methods: "'POST,OPTIONS'"
+        ResponseType: DEFAULT_5XX
+        RestApiId:
+          Ref: ApiGatewayRestApi
+

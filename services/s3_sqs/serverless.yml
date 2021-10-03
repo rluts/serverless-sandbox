@@ -1,0 +1,38 @@
+service: serverless-s3-sqs
+frameworkVersion: "2"
+
+custom:
+  bucket: rluts-users-bucket
+
+provider:
+  name: aws
+  runtime: python3.8
+  stage: dev
+  region: eu-central-1
+  memorySize: 128
+  lambdaHashingVersion: 20201221
+  environment:
+    QUEUE_URL:
+      Fn::ImportValue: S3Queue
+    REGION: ${self:provider.region}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - "s3:GetObject"
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
+    - Effect: Allow
+      Action:
+        - "sqs:*"
+      Resource:
+        Fn::ImportValue: S3QueueArn
+
+functions:
+  s3SQS:
+    handler: lambda_handler.s3_sqs
+    events:
+      - s3:
+          bucket: ${self:custom.bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - suffix: .json
+

@@ -1,0 +1,2 @@
+environment:
+  DYNAMODB_TABLE: "serverless_users"

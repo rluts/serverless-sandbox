@@ -1,0 +1,25 @@
+service: serverless-dynamodb
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  stage: dev
+  region: eu-central-1
+  environment: ${file(../../serverless.common.yml):environment}
+
+resources:
+  Resources:
+    LohikaDynamoDbTable:
+      Type: "AWS::DynamoDB::Table"
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
