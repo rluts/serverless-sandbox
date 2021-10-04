@@ -1,0 +1,19 @@
+{
+  "name": "serverless-app",
+  "version": "1.0.0",
+  "description": "This is a blank project for Python development with CDK.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.lohika.com:rluts/serverless-monorepo.git"
+  },
+  "author": "Roman Luts",
+  "license": "ISC",
+  "dependencies": {
+    "aws-cdk": "^1.125.0",
+    "serverless": "^2.60.3"
+  }
+}
