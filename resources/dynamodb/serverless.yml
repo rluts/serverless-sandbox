@@ -11,7 +11,7 @@ resources:
   Resources:
     LohikaDynamoDbTable:
       Type: "AWS::DynamoDB::Table"
-      DeletionPolicy: Retain
+      DeletionPolicy: Delete  # Do not use for production
       Properties:
         AttributeDefinitions:
           - AttributeName: id

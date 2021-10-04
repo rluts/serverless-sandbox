@@ -1,5 +1,7 @@
+# Deployment
+You can use `npm i` for installing CDK and Serverless framework
+
 ## Serverless framework
-* `$ npm i`
 
 Deploy all resources and services
 ```
