@@ -1,7 +1,15 @@
-# Deployment
 ## Serverless framework
-* `npm ci`
-* `./deploy_all.sh`
+* `$ npm i`
+
+Deploy all resources and services
+```
+$ $./deploy_all.sh
+```
+
+Removing stack
+```
+$ ./remove_all.sh
+```
 ## CDK
 
 To manually create a virtualenv on MacOS and Linux:
@@ -23,18 +31,13 @@ Once the virtualenv is activated, you can install the required dependencies.
 $ pip install -r requirements.txt
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
+Deployment:
 
 ```
-$ cdk synth
+$ cdk deploy
 ```
 
-## Useful commands
-
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
-
-Enjoy!
+Removing stack:
+```
+$ cdk destroy
+```

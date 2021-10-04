@@ -32,7 +32,7 @@ class CdkAppStack(cdk.Stack):
             queue_name='S3Queue',
             dead_letter_queue=sqs.DeadLetterQueue(queue=dead_letter_queue, max_receive_count=5)
         )
-        bucket = s3.Bucket(self, 'rluts-users-bucket')
+        bucket = s3.Bucket(self, 'rluts-users-bucket', bucket_name='rluts-users-bucket')
 
         get_users_lambda = self.create_lambda(
             name='getUsers',
@@ -75,6 +75,7 @@ class CdkAppStack(cdk.Stack):
             name='sqsDynamodb',
             handler='lambda_handler.sqs_dynamodb',
             path='services/sqs_dynamodb',
+            table=table
         )
 
         rest_api = api.RestApi(self, 'serverless_training_p1')
@@ -117,22 +118,16 @@ class CdkAppStack(cdk.Stack):
             code=aws_lambda.Code.from_asset(path),
             runtime=aws_lambda.Runtime('python3.8'),
             environment={
-                'DYNAMODB_TABLE': table and table.table_name,
-                'QUEUE_URL': queue and queue.queue_url
+                'DYNAMODB_TABLE': table.table_name if table else '',
+                'QUEUE_URL': queue.queue_url if queue else ''
             },
         )
         if table is not None:
             table.grant_read_write_data(lambda_function)
         if queue is not None:
             queue.grant_send_messages(lambda_function)
-            lambda_function.add_event_source(
-                event_sources.SqsEventSource()
-            )
         if bucket is not None:
             bucket.grant_read_write(lambda_function)
-            lambda_function.add_event_source(
-                event_sources.S3EventSource(bucket=bucket, events=[s3.EventType.OBJECT_CREATED])
-            )
 
         return lambda_function
 
